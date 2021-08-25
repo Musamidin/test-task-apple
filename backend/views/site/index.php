@@ -2,6 +2,9 @@
 
 /* @var $this yii\web\View */
 
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+
 $this->title = 'My Yii Application';
 ?>
 <div class="site-index">
@@ -10,44 +13,36 @@ $this->title = 'My Yii Application';
         <h1 class="display-4">Congratulations!</h1>
 
         <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
+        <?php
+        $form = ActiveForm::begin([
+        'method' => 'get',
+        'action' => '/backend/web/site/create',
+        'id' => 'btn-form',
+        'options' => ['class' => 'form-horizontal'],
+        ]) ?>
+        <p><?= Html::submitButton('Get Apple tree', ['class' => 'btn-lg btn-success']) ?></p>
+        <?php ActiveForm::end() ?>
     </div>
 
     <div class="body-content">
-
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
-            </div>
-        </div>
-
+        <ul>
+            <?php foreach ($app as $item): ?>
+            <li >
+                <div class="apple" style="background: <?= $item['color']; ?>">
+                    сколько съели: <?= $item['size']; ?> % |
+                    дата появления: <?= date('Y-m-d H:i:s',$item['created_at']); ?>
+                    <?php if($item['status'] == 1): ?>
+                        | дата падения: <?= date('Y-m-d H:i:s',$item['fall_at']); ?>
+                    <?php endif;?>
+                    <?php if($item['status'] == 0): ?>
+                        | <?= Html::a('Упасть на землю', ['site/fall', 'id' => $item['id']], ['class' => 'profile-link']) ?>
+                    <?php endif;?>
+                    <?php if($item['status'] == 1): ?>
+                        | <?= Html::a('Сесть', ['site/eat', 'id' => $item['id']], ['class' => 'profile-link']) ?>
+                    <?php endif;?>
+                </div>
+            </li>
+            <?php endforeach;?>
+        </ul>
     </div>
 </div>

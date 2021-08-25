@@ -88,3 +88,18 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+a.profile-link {
+    color: honeydew;
+    padding: 2px;
+    border: 1px solid currentColor;
+    background: darkcyan;
+}
+.apple{
+    display: block;
+    width: 75%;
+    border: 1px solid silver;
+    margin: 1px;
+    padding: 10px;
+    color: floralwhite;
+}

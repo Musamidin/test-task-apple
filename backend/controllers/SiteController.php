@@ -2,8 +2,10 @@
 
 namespace backend\controllers;
 
+use app\models\Apple;
 use common\models\LoginForm;
 use Yii;
+use yii\db\Exception;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -28,7 +30,7 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index', 'create', 'fall', 'eat'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -38,6 +40,9 @@ class SiteController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
+                    'create' => ['get'],
+                    'fall' => ['get'],
+                    'eat' => ['get'],
                 ],
             ],
         ];
@@ -62,9 +67,85 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        if (!Yii::$app->user->isGuest) {
+            $a = Apple::find()->asArray()->all();
+            return $this->render('index', ['app' => $a]);
+        }
+
+        return $this->render('index', ['app' => []]);
     }
 
+    public function actionCreate()
+    {
+        if (!Yii::$app->user->isGuest) {
+            $r = mt_rand(2, 6);
+            for($i = 0; $i < $r; $i++)
+            {
+                $ap = new Apple('red');
+                $ap->createTree();
+            }
+            $this->goHome();
+        }
+
+        $this->layout = 'blank';
+
+        $model = new LoginForm();
+
+        return $this->render('login', [
+            'model' => $model,
+        ]);
+
+    }
+
+    public function actionFall()
+    {
+        $get = Yii::$app->request->get();
+        try
+        {
+            if ($get['id'] != null || $get['id'] != 0)
+            {
+                $a = Apple::findOne($get['id']);
+                $a->status = Apple::STATUS_FALL_TO_GROUND;
+                $a->fall_at = time();
+                $a->expired = time() + 60*60;
+                $a->save();
+            }
+            $this->goHome();
+        }
+        catch (\Exception $e)
+        {
+            Yii::error($e->getMessage(),'writeLog');
+        }
+    }
+
+    public function actionEat()
+    {
+        $get = Yii::$app->request->get();
+        try
+        {
+            if ($get['id'] != null || $get['id'] != 0)
+            {
+                $a = Apple::findOne($get['id']);
+                if(time() > $a->expired)
+                {
+                   throw new Exception('Яблоко испорчено!');
+                }
+
+                $a->size = ($a->size-25);
+                $a->save();
+
+                if($a->size == 0)
+                {
+                    $a->delete();
+                }
+            }
+            $this->goHome();
+        }
+        catch (\Exception $e)
+        {
+            Yii::error($e->getMessage(),'writeLog');
+        }
+    }
     /**
      * Login action.
      *

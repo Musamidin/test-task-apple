@@ -10,19 +10,18 @@ class m210825_124252_adding_expired_column_to_Apple extends Migration
     /**
      * {@inheritdoc}
      */
-    public function safeUp()
+    public function up()
     {
-
+        $this->addColumn('{{%apple}}', 'expired', $this->integer());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function safeDown()
+    public function down()
     {
         echo "m210825_124252_adding_expired_column_to_Apple cannot be reverted.\n";
-
-        return false;
+        $this->dropColumn('{{%apple}}', 'expired');
     }
 
     /*
